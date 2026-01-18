@@ -3,3 +3,7 @@ derrick-rose-analytics/
   requirements.txt
   data/
     derrick_rose_career.csv
+git add .
+git commit -m "Add Derrick Rose career data CSV"
+git push
+
