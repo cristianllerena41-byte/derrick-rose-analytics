@@ -1,135 +1,125 @@
-import streamlit as st
+iimport streamlit as st
 import pandas as pd
 
-# ---- PAGE CONFIG ----
-st.set_page_config(page_title="Derrick Rose Analytics", layout="wide")
+# ---------- PAGE CONFIG ----------
+st.set_page_config(page_title="NBA Player Comparison", layout="wide")
 
-# ---- 🔥 STYLE (ESPN LOOK) ----
+# ---------- STYLE ----------
 st.markdown("""
 <style>
 .main {
-    background: linear-gradient(to bottom, #0E1117, #05070c);
+    background: linear-gradient(to bottom, #0b0f1a, #111);
 }
-
 h1 {
-    color: #00BFFF;
+    color: #00c6ff;
 }
-
-/* STAT CARDS */
-.stMetric {
+.stat-box {
     background: linear-gradient(145deg, #1c1f26, #111);
-    padding: 18px;
-    border-radius: 14px;
-    border: 1px solid #00BFFF33;
+    padding: 15px;
+    border-radius: 12px;
     text-align: center;
-}
-
-/* COLOR ACCENTS */
-div[data-testid="metric-container"]:nth-child(1) {
-    border-left: 5px solid #00BFFF;
-}
-div[data-testid="metric-container"]:nth-child(2) {
-    border-left: 5px solid #00FFAA;
-}
-div[data-testid="metric-container"]:nth-child(3) {
-    border-left: 5px solid #FF4B4B;
-}
-div[data-testid="metric-container"]:nth-child(4) {
-    border-left: 5px solid #FFD700;
+    box-shadow: 0 0 10px rgba(0,198,255,0.2);
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ---- LOAD DATA ----
-df = pd.read_csv("derrick_rose_career.csv")
+# ---------- LOAD DATA ----------
+df = pd.read_csv("nba_player_stats.csv")
 
-# ---- TITLE ----
-st.title("🏀 Derrick Rose Player Dashboard")
+# ---------- TITLE ----------
+st.title("🏀 NBA Player Analytics Dashboard")
 
-# ---- TEAM FILTER ----
-teams = st.sidebar.multiselect(
-    "Teams",
-    df["Team"].unique(),
-    default=df["Team"].unique()
-)
+# ---------- PLAYER SELECT ----------
+players = df["Player"].unique()
 
-df_filtered = df[df["Team"].isin(teams)]
+col1, col2 = st.columns(2)
 
-# ---- SELECT SEASON ----
-season = st.selectbox("Select Season", df_filtered["Season"])
-row = df_filtered[df_filtered["Season"] == season].iloc[0]
+with col1:
+    player1 = st.selectbox("Select Player 1", players)
 
-st.markdown("---")
+with col2:
+    player2 = st.selectbox("Select Player 2", players)
 
-# ---- 🔥 MAIN STATS ----
-st.markdown(f"## 🔥 {season} Season Overview")
+# ---------- FILTER ----------
+df1 = df[df["Player"] == player1]
+df2 = df[df["Player"] == player2]
 
-c1, c2, c3, c4 = st.columns(4)
+# ---------- SEASON SELECT ----------
+season = st.selectbox("Select Season", sorted(df["Season"].unique()))
 
-c1.metric("🏀 PPG", row["PPG"])
-c2.metric("🎯 AST", row["AST"])
-c3.metric("💪 REB", row["REB"])
-c4.metric("📊 FG%", row["FG%"])
-
-# ---- ADVANCED STATS ----
-c5, c6, c7, c8 = st.columns(4)
-
-c5.metric("⚡ TS%", row["TS%"])
-c6.metric("🔥 USG%", row["USG"])
-c7.metric("📈 Impact", round(row["PPG"] + row["AST"] + row["REB"],1))
-c8.metric("🧠 Efficiency", round(row["TS%"] * row["USG"] / 10,1))
+row1 = df1[df1["Season"] == season]
+row2 = df2[df2["Season"] == season]
 
 st.markdown("---")
 
-# ---- PLAYER INFO CARD ----
-st.markdown(f"""
-<div style="
-background: linear-gradient(145deg,#1c1f26,#111);
-padding:20px;
-border-radius:12px;
-border-left:5px solid #00BFFF;
-">
-<h3 style="color:#00BFFF;">📌 Season Info</h3>
-<b>Team:</b> {row['Team']}<br>
-<b>Season:</b> {season}<br>
-<b>FG%:</b> {row['FG%']}<br>
-<b>TS%:</b> {row['TS%']}<br>
-<b>USG%:</b> {row['USG']}<br>
-<b>Notes:</b> {row['Notes']}
-</div>
-""", unsafe_allow_html=True)
+# ---------- COMPARISON ----------
+if not row1.empty and not row2.empty:
 
+    row1 = row1.iloc[0]
+    row2 = row2.iloc[0]
+
+    st.subheader(f"🔥 {player1} vs {player2} ({season})")
+
+    stats = ["PPG", "AST", "REB", "FG%", "TS%", "USG"]
+
+    cols = st.columns(len(stats))
+
+    for i, stat in enumerate(stats):
+        v1 = float(row1[stat])
+        v2 = float(row2[stat])
+
+        diff = round(v1 - v2, 2)
+
+        color = "#00ffcc" if diff > 0 else "#ff4d4d"
+
+        cols[i].markdown(f"""
+        <div class="stat-box">
+            <h4>{stat}</h4>
+            <p>{player1}: {v1}</p>
+            <p>{player2}: {v2}</p>
+            <p style='color:{color}; font-weight:bold;'>Diff: {diff}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # ---------- WINNER ----------
+    score1 = row1["PPG"] + row1["AST"] + row1["REB"]
+    score2 = row2["PPG"] + row2["AST"] + row2["REB"]
+
+    if score1 > score2:
+        st.success(f"🏆 {player1} had the better season")
+    elif score2 > score1:
+        st.success(f"🏆 {player2} had the better season")
+    else:
+        st.info("It's a tie")
+
+    # ---------- EXTRA INFO ----------
+    st.markdown("### 📌 Season Info")
+
+    c1, c2 = st.columns(2)
+
+    with c1:
+        st.markdown(f"""
+        **{player1}**
+        - Team: {row1["Team"]}
+        - FG%: {row1["FG%"]}
+        - TS%: {row1["TS%"]}
+        - Usage: {row1["USG"]}
+        - Notes: {row1["Notes"]}
+        """)
+
+    with c2:
+        st.markdown(f"""
+        **{player2}**
+        - Team: {row2["Team"]}
+        - FG%: {row2["FG%"]}
+        - TS%: {row2["TS%"]}
+        - Usage: {row2["USG"]}
+        - Notes: {row2["Notes"]}
+        """)
+
+else:
+    st.warning("⚠️ One player didn't play this season")
+
+# ---------- FOOTER ----------
 st.markdown("---")
-
-# ---- MINI VISUAL BAR (CLEAN + COLORFUL) ----
-st.subheader("📊 Stat Comparison")
-
-stats = ["PPG", "AST", "REB", "TS%", "USG"]
-values = [
-    row["PPG"],
-    row["AST"],
-    row["REB"],
-    row["TS%"],
-    row["USG"]
-]
-
-colors = ["#00BFFF", "#00FFAA", "#FF4B4B", "#FFD700", "#9B59B6"]
-
-bar_cols = st.columns(len(stats))
-
-for i in range(len(stats)):
-    bar_cols[i].markdown(f"""
-    <div style="text-align:center">
-        <div style="font-size:20px;color:{colors[i]}">{stats[i]}</div>
-        <div style="font-size:28px;color:white;font-weight:bold">{values[i]}</div>
-        <div style="height:8px;background:{colors[i]};border-radius:5px;margin-top:8px"></div>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("---")
-
-# ---- TABLE (ONLY THAT SEASON) ----
-st.dataframe(df_filtered[df_filtered["Season"] == season], use_container_width=True)
-
-# ---- FOOTER ----
 st.caption("🚀 Built by Cristian Llerena | Sports Analytics Project")
