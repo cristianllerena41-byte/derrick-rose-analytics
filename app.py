@@ -5,15 +5,23 @@ import plotly.express as px
 # ---- PAGE CONFIG ----
 st.set_page_config(page_title="Derrick Rose Analytics", layout="wide")
 
-# ---- STYLE ----
+# ---- 🔥 ESPN STYLE ----
 st.markdown("""
 <style>
-.main {background-color: #0E1117;}
-h1, h2, h3 {color: white;}
+.main {
+    background: linear-gradient(to bottom, #0E1117, #05070c);
+}
+h1 {
+    color: #00BFFF;
+}
+h2, h3 {
+    color: white;
+}
 .stMetric {
-    background-color: #1c1f26;
+    background: linear-gradient(145deg, #1c1f26, #111);
     padding: 15px;
-    border-radius: 10px;
+    border-radius: 12px;
+    border: 1px solid #00BFFF33;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -45,7 +53,7 @@ c4.metric("USG%", round(df_filtered["USG"].mean(),1))
 
 st.markdown("---")
 
-# ---- SEASON EXPLORER ----
+# ---- SEASON SELECTOR ----
 st.subheader("🎯 Season Breakdown")
 
 season = st.selectbox("Pick a season", df["Season"])
@@ -59,14 +67,16 @@ c.metric("TS%", row["TS%"])
 d.metric("USG%", row["USG"])
 
 st.markdown(f"""
-**Team:** {row['Team']}  
-**FG%:** {row['FG%']}  
-**Notes:** {row['Notes']}
-""")
+<div style="background: linear-gradient(145deg,#1c1f26,#111);padding:15px;border-radius:10px">
+<b>Team:</b> {row['Team']}<br>
+<b>FG%:</b> {row['FG%']}<br>
+<b>Notes:</b> {row['Notes']}
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown("---")
 
-# ---- SCORING TREND (FIXED + CLEAN) ----
+# ---- SCORING TREND (🔥 GLOW + COLOR) ----
 st.subheader("📈 Scoring Trend")
 
 fig = px.line(
@@ -77,50 +87,64 @@ fig = px.line(
     text="PPG"
 )
 
-# FIX AXIS (VERY IMPORTANT)
 fig.update_xaxes(type='category')
 
-# STYLE
+# BASE LINE (faded)
 fig.update_traces(
-    line=dict(color="#00BFFF", width=4),
-    marker=dict(size=10, color="#00BFFF"),
+    line=dict(color="#444", width=2),
+    marker=dict(size=8, color="#444"),
     textposition="top center"
+)
+
+# 🔥 HIGHLIGHT SELECTED
+selected_row = df[df["Season"] == season]
+
+fig.add_scatter(
+    x=selected_row["Season"],
+    y=selected_row["PPG"],
+    mode="markers+text",
+    marker=dict(size=18, color="#00BFFF", line=dict(width=3, color="white")),
+    text=selected_row["PPG"],
+    textposition="top center",
+    name="Selected"
 )
 
 fig.update_layout(
     plot_bgcolor="#1c1f26",
     paper_bgcolor="#0E1117",
     font=dict(color="white"),
-    title="Points Per Game by Season",
     hovermode="x unified"
 )
 
 st.plotly_chart(fig, use_container_width=True)
 
-# ---- EFFICIENCY CHART ----
+# ---- TS% GRAPH (🔥 COLOR POP) ----
 st.subheader("🎯 Efficiency (TS%)")
+
+colors = [
+    "#00FFAA" if s == season else "#222"
+    for s in df_filtered["Season"]
+]
 
 fig2 = px.bar(
     df_filtered,
     x="Season",
     y="TS%",
-    text="TS%"
+    text="TS%",
+    color=colors,
+    color_discrete_map="identity"
 )
 
-# FIX AXIS
 fig2.update_xaxes(type='category')
 
-# STYLE
 fig2.update_traces(
-    marker_color="#00FFAA",
     textposition="outside"
 )
 
 fig2.update_layout(
     plot_bgcolor="#1c1f26",
     paper_bgcolor="#0E1117",
-    font=dict(color="white"),
-    title="True Shooting % by Season"
+    font=dict(color="white")
 )
 
 st.plotly_chart(fig2, use_container_width=True)
