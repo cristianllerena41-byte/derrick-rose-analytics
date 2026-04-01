@@ -1,9 +1,16 @@
-derrick-rose-analytics/
-  app.py
-  requirements.txt
-  data/
-    derrick_rose_career.csv
-git add
-git commit -m Add Derrick Rose career data CSV,
-git push
-
+Season,Team,PPG,AST,REB,Notes
+2008-09,CHI,16.8,6.3,3.9,Rookie of the Year
+2009-10,CHI,20.8,6.0,3.8,All-Star level
+2010-11,CHI,25.0,7.7,4.1,MVP
+2011-12,CHI,21.8,7.9,3.4,Injury season
+2013-14,CHI,15.9,4.3,3.2,Limited games
+2014-15,CHI,17.7,4.9,3.2,Comeback
+2015-16,CHI,16.4,4.7,3.4,Last Bulls season
+2016-17,NYK,18.0,4.4,3.8,Knicks
+2017-18,CLE/MIN,8.4,1.5,1.4,Injuries
+2018-19,MIN,18.0,4.3,2.7,50 point game
+2019-20,DET,18.1,5.6,2.4,Strong season
+2020-21,DET/NYK,14.9,4.2,2.6,Trade
+2021-22,NYK,12.0,4.0,3.0,Bench role
+2022-23,NYK,5.6,1.7,1.5,Limited minutes
+2023-24,MEM,8.0,3.3,1.9,Final season
