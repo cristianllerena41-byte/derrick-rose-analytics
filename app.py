@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# ---- PAGE CONFIG ----
 st.set_page_config(page_title="Derrick Rose Analytics", layout="wide")
 
 # ---- STYLE ----
@@ -17,7 +18,7 @@ h1, h2, h3 {color: white;}
 </style>
 """, unsafe_allow_html=True)
 
-# ---- LOAD ----
+# ---- LOAD DATA ----
 df = pd.read_csv("derrick_rose_career.csv")
 
 # ---- TITLE ----
@@ -65,15 +66,33 @@ st.markdown(f"""
 
 st.markdown("---")
 
-# ---- INTERACTIVE CHART ----
+# ---- SCORING TREND (FIXED + CLEAN) ----
 st.subheader("📈 Scoring Trend")
 
-fig = px.line(df_filtered, x="Season", y="PPG", markers=True)
+fig = px.line(
+    df_filtered,
+    x="Season",
+    y="PPG",
+    markers=True,
+    text="PPG"
+)
+
+# FIX AXIS (VERY IMPORTANT)
+fig.update_xaxes(type='category')
+
+# STYLE
+fig.update_traces(
+    line=dict(color="#00BFFF", width=4),
+    marker=dict(size=10, color="#00BFFF"),
+    textposition="top center"
+)
 
 fig.update_layout(
     plot_bgcolor="#1c1f26",
     paper_bgcolor="#0E1117",
-    font=dict(color="white")
+    font=dict(color="white"),
+    title="Points Per Game by Season",
+    hovermode="x unified"
 )
 
 st.plotly_chart(fig, use_container_width=True)
@@ -81,12 +100,27 @@ st.plotly_chart(fig, use_container_width=True)
 # ---- EFFICIENCY CHART ----
 st.subheader("🎯 Efficiency (TS%)")
 
-fig2 = px.bar(df_filtered, x="Season", y="TS%")
+fig2 = px.bar(
+    df_filtered,
+    x="Season",
+    y="TS%",
+    text="TS%"
+)
+
+# FIX AXIS
+fig2.update_xaxes(type='category')
+
+# STYLE
+fig2.update_traces(
+    marker_color="#00FFAA",
+    textposition="outside"
+)
 
 fig2.update_layout(
     plot_bgcolor="#1c1f26",
     paper_bgcolor="#0E1117",
-    font=dict(color="white")
+    font=dict(color="white"),
+    title="True Shooting % by Season"
 )
 
 st.plotly_chart(fig2, use_container_width=True)
@@ -105,3 +139,6 @@ with col2:
 # ---- TABLE ----
 st.markdown("---")
 st.dataframe(df_filtered, use_container_width=True)
+
+# ---- FOOTER ----
+st.caption("🚀 Built by Cristian Llerena | Sports Analytics Project")
