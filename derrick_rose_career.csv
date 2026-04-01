@@ -1,16 +1,16 @@
-Season,Team,PPG,AST,REB,Notes
-2008-09,CHI,16.8,6.3,3.9,Rookie of the Year
-2009-10,CHI,20.8,6.0,3.8,All-Star level
-2010-11,CHI,25.0,7.7,4.1,MVP
-2011-12,CHI,21.8,7.9,3.4,Injury season
-2013-14,CHI,15.9,4.3,3.2,Limited games
-2014-15,CHI,17.7,4.9,3.2,Comeback
-2015-16,CHI,16.4,4.7,3.4,Last Bulls season
-2016-17,NYK,18.0,4.4,3.8,Knicks
-2017-18,CLE/MIN,8.4,1.5,1.4,Injuries
-2018-19,MIN,18.0,4.3,2.7,50 point game
-2019-20,DET,18.1,5.6,2.4,Strong season
-2020-21,DET/NYK,14.9,4.2,2.6,Trade
-2021-22,NYK,12.0,4.0,3.0,Bench role
-2022-23,NYK,5.6,1.7,1.5,Limited minutes
-2023-24,MEM,8.0,3.3,1.9,Final season
+Season,Team,PPG,AST,REB,FG%,TS%,USG,Notes
+2008-09,CHI,16.8,6.3,3.9,47.5,51.6,22.1,Rookie of the Year
+2009-10,CHI,20.8,6.0,3.8,48.9,53.2,26.3,All-Star level
+2010-11,CHI,25.0,7.7,4.1,44.5,55.0,31.3,MVP
+2011-12,CHI,21.8,7.9,3.4,43.5,53.2,30.4,Injury season
+2013-14,CHI,15.9,4.3,3.2,35.4,44.6,30.3,Limited games
+2014-15,CHI,17.7,4.9,3.2,40.5,49.3,30.7,Comeback
+2015-16,CHI,16.4,4.7,3.4,42.7,47.9,26.8,Last Bulls season
+2016-17,NYK,18.0,4.4,3.8,47.1,53.0,25.6,Knicks
+2017-18,CLE/MIN,8.4,1.5,1.4,43.9,50.7,24.1,Injuries
+2018-19,MIN,18.0,4.3,2.7,48.2,55.7,28.0,50 point game
+2019-20,DET,18.1,5.6,2.4,49.0,55.5,32.7,Strong season
+2020-21,DET/NYK,14.9,4.2,2.6,47.0,55.0,26.0,Trade
+2021-22,NYK,12.0,4.0,3.0,44.5,54.1,23.2,Bench role
+2022-23,NYK,5.6,1.7,1.5,38.4,46.3,24.3,Limited minutes
+2023-24,MEM,8.0,3.3,1.9,46.1,54.0,23.5,Final season
