@@ -1,59 +1,65 @@
-import pandas as pd
 import streamlit as st
-import plotly.express as px
+import pandas as pd
+import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Derrick Rose Dashboard", layout="wide")
-st.title("Derrick Rose — Career Dashboard")
+# Page config
+st.set_page_config(page_title="Derrick Rose Analytics", layout="wide")
 
-PATH = "data/derrick_rose_career.csv"
+# Title
+st.title("🏀 Derrick Rose Career Analytics Dashboard")
 
-@st.cache_data
-def load_data(path):
-    df = pd.read_csv(path)
-    df.columns = [c.strip() for c in df.columns]
+# Load data
+df = pd.read_csv("derrick_rose_career.csv")
 
-    # SeasonStart: "2010-11" -> 2010
-    df["SeasonStart"] = pd.to_numeric(df["Season"].astype(str).str[:4], errors="coerce")
-
-    # Turn stats into numbers (if they exist)
-    for col in ["PTS", "AST", "TRB", "MP", "FG%", "3P%", "FT%"]:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
-
-    df = df.dropna(subset=["SeasonStart"]).sort_values("SeasonStart")
-    return df
-
-df = load_data(PATH)
-
-# ---- Sidebar filters ----
+# Sidebar filters
 st.sidebar.header("Filters")
 
-metric_list = [c for c in ["PTS", "AST", "TRB", "MP", "FG%", "3P%", "FT%"] if c in df.columns]
-metric = st.sidebar.selectbox("Choose a Stat", metric_list)
+teams = st.sidebar.multiselect(
+    "Select Team(s):",
+    options=df["Team"].unique(),
+    default=df["Team"].unique()
+)
 
-team_list = ["All"] + sorted(df["Tm"].dropna().unique().tolist()) if "Tm" in df.columns else ["All"]
-team = st.sidebar.selectbox("Team", team_list)
+df_filtered = df[df["Team"].isin(teams)]
 
-min_year = int(df["SeasonStart"].min())
-max_year = int(df["SeasonStart"].max())
-years = st.sidebar.slider("Year Range", min_year, max_year, (min_year, max_year))
+# Layout (columns)
+col1, col2 = st.columns(2)
 
-# Apply filters
-filtered = df[(df["SeasonStart"] >= years[0]) & (df["SeasonStart"] <= years[1])]
-if team != "All" and "Tm" in filtered.columns:
-    filtered = filtered[filtered["Tm"] == team]
+# ---- METRICS ----
+with col1:
+    st.subheader("📊 Career Averages")
 
-# ---- Charts ----
-st.subheader(f"{metric} Over Time")
-fig1 = px.line(filtered, x="SeasonStart", y=metric, markers=True, hover_data=["Season"] + (["Tm"] if "Tm" in filtered.columns else []))
-st.plotly_chart(fig1, use_container_width=True)
+    st.metric("PPG", round(df_filtered["PPG"].mean(), 1))
+    st.metric("AST", round(df_filtered["AST"].mean(), 1))
+    st.metric("REB", round(df_filtered["REB"].mean(), 1))
 
-if "Tm" in df.columns:
-    st.subheader(f"Average {metric} by Team")
-    team_avg = filtered.groupby("Tm", as_index=False)[metric].mean().sort_values(metric, ascending=False)
-    fig2 = px.bar(team_avg, x="Tm", y=metric)
-    st.plotly_chart(fig2, use_container_width=True)
+# ---- TABLE ----
+with col2:
+    st.subheader("📋 Data Table")
+    st.dataframe(df_filtered, use_container_width=True)
 
-st.subheader("Table")
-st.dataframe(filtered, use_container_width=True)
+# ---- CHART ----
+st.subheader("📈 Points Per Game Over Time")
 
+fig, ax = plt.subplots()
+ax.plot(df_filtered["Season"], df_filtered["PPG"], marker='o')
+plt.xticks(rotation=45)
+plt.xlabel("Season")
+plt.ylabel("PPG")
+plt.title("Derrick Rose Scoring Trend")
+
+st.pyplot(fig)
+
+# ---- HIGHLIGHT MVP ----
+st.subheader("🏆 MVP Season")
+mvp = df[df["Notes"] == "MVP"]
+st.success(f"MVP Season: {mvp['Season'].values[0]} with {mvp['PPG'].values[0]} PPG")
+
+# ---- BEST SEASON ----
+st.subheader("🔥 Best Scoring Season")
+best = df.loc[df["PPG"].idxmax()]
+st.info(f"{best['Season']} - {best['PPG']} PPG")
+
+# ---- FOOTER ----
+st.markdown("---")
+st.caption("Data visualization project by Cristian Llerena")
